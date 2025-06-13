@@ -1,6 +1,6 @@
 # data_store.py
 ## Object class
-CAM_CONFIGS = None  # hoặc [] hoặc dict tùy bạn cấu trúc
+CAM_CONFIGS = None  
 cam_index = 0
 def update_cam_configs(new_configs, index):
     global CAM_CONFIGS, cam_index
