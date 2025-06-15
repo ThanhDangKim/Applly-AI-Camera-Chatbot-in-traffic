@@ -20,7 +20,7 @@ def write_logger():
 
     # Tạo file handler
     file_handler = logging.FileHandler(
-        r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log_1.txt",
+        r"log/log_1.txt",
         encoding='utf-8',
         mode='a'
     )
@@ -255,8 +255,6 @@ class Cam1Config:
 
         # đơn giản hóa: kiểm tra theo hình chữ nhật nằm ngang
         if bl[0] <= x <= tr[0] and tl[1] <= y <= br[1]:
-            # with open(r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log.txt", 'a', encoding='utf-8') as f:
-            #     f.write("\n3. Top Center Left")
             self.logger.info("3. Lane3_Right")
             return True
         return False
@@ -267,8 +265,6 @@ class Cam1Config:
 
         # đơn giản hóa: kiểm tra theo hình chữ nhật nằm ngang
         if bl[0] <= x <= tr[0] and tl[1] <= y <= br[1]:
-            # with open(r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log.txt", 'a', encoding='utf-8') as f:
-            #     f.write("\n3. Top Center Left")
             self.logger.info("3. Top_Lane3_Right")
             return True
         return False
@@ -312,8 +308,6 @@ class Cam1Config:
         # Xác định vùng để scale `mpp`
         bbox = bbox_list[0]  # lấy bbox mới nhất
         bbox_height = bbox[3] - bbox[1]
-        # bbox_height_mean = sum([bbox[3] - bbox[1] for bbox in bbox_list]) / len(bbox_list)
-        # ratio_height = bbox_height / bbox_height_mean
 
         p_standard = (frame_width / 2, frame_height / 2)
         standard_coords = self.transform_to_ground_plane(p_standard, matrix)
@@ -449,16 +443,6 @@ class Cam1Config:
 
     def get_adjusted_direction(self, history, direction_zones, threshold=0.05):
         zone = self.get_direction(history[-1], direction_zones)  # Gần zone nào nhất
-        # vector_dir = self.get_direction_from_vector(history, threshold)  # Hướng di chuyển
-        # self.logger.info(f"Location 1st: {history[-1]} - Zone: {zone} - Vector: {vector_dir}")
-        # # Chuẩn hóa hướng vector thành hướng tổng quát (vd: bottom-left, top-right...)
-        # if (zone == "top" and vector_dir == "left-bottom") or (zone == "top" and vector_dir == "bottom") or (zone == "top" and vector_dir == "right-bottom"):
-        #     return "top"
-        # if (zone == "right" and vector_dir == "right-bottom") or (zone == "top" and vector_dir == "right-bottom"):
-        #     return "right"
-        # if (zone == "bottom" and vector_dir == "left-top") or (zone == "bottom" and vector_dir == "right-top") or (zone == "bottom" and vector_dir == "top"):
-        #     return "bottom"
-        # else:
         return zone  # fallback theo vector nếu không thỏa
 
     ''' #### Density directions  
@@ -503,6 +487,16 @@ class Cam1Config:
             return 2.0, 1.5
         else:  # nhanh
             return 1.5, 2.0
+        
+    def calc_yellow_time(self, avg_speed_mps, VTw, tp=1.0, a=3.0, Gg=0.0, k=0.3):
+        '''
+            tp: thời gian phản ứng (khoảng 1s)
+            v: tốc độ tiếp cận (ft/s)
+            a: gia tốc âm (≈ 3 m/s²)
+            Gg: thành phần do độ dốc
+        '''
+        base = tp + avg_speed_mps / (2 * (a + Gg))
+        return base + k * VTw
 
     def calculate_light_times(self, direction_counts_snapshot, direction_speeds_snapshot, 
                             direction, area_or_length, VTw_dict, VTL_dict):
@@ -533,7 +527,7 @@ class Cam1Config:
         # Đèn vàng vẫn giữ logic cũ
         combined_speeds = direction_speeds_snapshot.get(keys[0], []) + direction_speeds_snapshot.get(keys[1], [])
         avg_speed = sum(combined_speeds) / len(combined_speeds) if combined_speeds else 0
-        yellow_light_time = max(3, min(5, avg_speed / 10))
+        yellow_light_time = min(7, max(3, self.calc_yellow_time(avg_speed, VTw)))
 
         # Tính VTL trung bình của 2 hướng kia để tăng đèn đỏ
         opposite_keys = ["top"] if direction == "tb" else ["right", "bottom"]
@@ -640,7 +634,7 @@ class Cam1Config:
                     -> thời gian đèn vàng gợi ý: {self.yellow_time} giây
                     -> thời gian đèn đỏ bên kia gợi ý: {self.red_time_opposite} giây''')
 
-                log_file_light = r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\light_time.txt"
+                log_file_light = r"log/light_time.txt"
                 self.log_green_light_time(self.previous_cycle_direction, self.green_time, self.yellow_time, self.red_time_opposite, log_file_light)
 
             self.previous_cycle_direction = self.current_cycle_direction

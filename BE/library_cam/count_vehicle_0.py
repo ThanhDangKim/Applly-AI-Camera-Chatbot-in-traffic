@@ -20,7 +20,7 @@ def write_logger():
 
     # Tạo file handler
     file_handler = logging.FileHandler(
-        r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log.txt",
+        r"log/log.txt",
         encoding='utf-8',
         mode='a'
     )
@@ -560,6 +560,16 @@ class Cam0Config:
             return 2.5, 1.5
         else:  # nhanh
             return 1.5, 2.0
+        
+    def calc_yellow_time(self, avg_speed_mps, VTw, tp=1.0, a=3.0, Gg=0.0, k=0.3):
+        '''
+            tp: thời gian phản ứng (khoảng 1s)
+            v: tốc độ tiếp cận (ft/s)
+            a: gia tốc âm (≈ 3 m/s²)
+            Gg: thành phần do độ dốc
+        '''
+        base = tp + avg_speed_mps / (2 * (a + Gg))
+        return base + k * VTw
 
     def calculate_light_times(self, direction_counts_snapshot, direction_speeds_snapshot, 
                             direction, area_or_length, VTw_dict, VTL_dict):
@@ -591,7 +601,7 @@ class Cam0Config:
         # Đèn vàng vẫn giữ logic cũ
         combined_speeds = direction_speeds_snapshot.get(keys[0], []) + direction_speeds_snapshot.get(keys[1], [])
         avg_speed = sum(combined_speeds) / len(combined_speeds) if combined_speeds else 0
-        yellow_light_time = max(3, min(5, avg_speed / 10))
+        yellow_light_time = min(7, max(3, self.calc_yellow_time(avg_speed, VTw)))
 
         # Tính VTL trung bình của 2 hướng kia để tăng đèn đỏ
         opposite_keys = ["left", "right"] if direction == "tb" else ["top", "bottom"]
@@ -698,7 +708,7 @@ class Cam0Config:
                     -> thời gian đèn vàng gợi ý: {self.yellow_time} giây
                     -> thời gian đèn đỏ bên kia gợi ý: {self.red_time_opposite} giây''')
 
-                log_file_light = r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\light_time.txt"
+                log_file_light = r"log/light_time.txt"
                 self.log_green_light_time(self.previous_cycle_direction, self.green_time, self.yellow_time, self.red_time_opposite, log_file_light)
 
             self.previous_cycle_direction = self.current_cycle_direction

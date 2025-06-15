@@ -20,7 +20,7 @@ def write_logger():
 
     # Tạo file handler
     file_handler = logging.FileHandler(
-        r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log_3.txt",
+        r"log/log_3.txt",
         encoding='utf-8',
         mode='a'
     )
@@ -454,7 +454,6 @@ class Cam3Config:
         if self.is_in_lane1_zone(center, self.zones[0]) == True:
             block_parameter = self.adjust_speed_by_position(center[1], frame_height, 5.3)
             self.logger.info(f"BP: {block_parameter}")
-                
             # scale theo chiều cao bbox
             real_height = 1.5
             mpp = 0.74
@@ -473,8 +472,7 @@ class Cam3Config:
         elif (self.is_in_lane4_zone(center, self.zones[3]) == True):
             block_parameter = self.adjust_speed_by_position((self.frame_height - center[1]), frame_height, 356.2, 1.3)
             self.logger.info(f"BP: {block_parameter}")
-
-            # scale theo chiều cao bbox, giả định chiều cao thực tế là 1.5m
+            # scale theo chiều cao bbox
             real_height = 3.0
             mpp = 2.08
             scale_factor = real_height / (bbox_height * mpp + 1e-6)  # tránh chia 0
@@ -545,10 +543,6 @@ class Cam3Config:
         speed_kmh = (distance_meters / time) * 3.6
         self.logger.info(f"distance meters: {distance_meters}")
 
-        # if speed_kmh > 70:
-        #     adjustment = random.uniform(-10, 10)
-        #     speed_kmh = 70 + adjustment
-            
         return speed_kmh
     
     def draw_direction_zones(self, frame, direction_zones):
@@ -678,6 +672,15 @@ class Cam3Config:
             return 2.0, 1.5
         else:  # nhanh
             return 1.5, 2.0
+    def calc_yellow_time(self, avg_speed_mps, VTw, tp=1.0, a=3.0, Gg=0.0, k=0.3):
+        '''
+            tp: thời gian phản ứng (khoảng 1s)
+            v: tốc độ tiếp cận (ft/s)
+            a: gia tốc âm (≈ 3 m/s²)
+            Gg: thành phần do độ dốc
+        '''
+        base = tp + avg_speed_mps / (2 * (a + Gg))
+        return base + k * VTw
 
     def calculate_light_times(self, direction_counts_snapshot, direction_speeds_snapshot, 
                             direction, area_or_length, VTw_dict, VTL_dict):
@@ -708,7 +711,7 @@ class Cam3Config:
         # Đèn vàng vẫn giữ logic cũ
         combined_speeds = direction_speeds_snapshot.get(keys[0], []) + direction_speeds_snapshot.get(keys[1], [])
         avg_speed = sum(combined_speeds) / len(combined_speeds) if combined_speeds else 0
-        yellow_light_time = max(3, min(5, avg_speed / 10))
+        yellow_light_time = min(7, max(3, self.calc_yellow_time(avg_speed, VTw)))
 
         # Tính VTL trung bình của 2 hướng kia để tăng đèn đỏ
         opposite_keys = ["right"] if direction == "tb" else ["top", "bottom"]
@@ -815,7 +818,7 @@ class Cam3Config:
                     -> thời gian đèn vàng gợi ý: {self.yellow_time} giây
                     -> thời gian đèn đỏ bên kia gợi ý: {self.red_time_opposite} giây''')
 
-                log_file_light = r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\light_time.txt"
+                log_file_light = r"log/light_time.txt"
                 self.log_green_light_time(self.previous_cycle_direction, self.green_time, self.yellow_time, self.red_time_opposite, log_file_light)
 
             self.previous_cycle_direction = self.current_cycle_direction

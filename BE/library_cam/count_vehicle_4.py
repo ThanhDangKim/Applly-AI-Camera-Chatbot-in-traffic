@@ -20,7 +20,7 @@ def write_logger():
 
     # Tạo file handler
     file_handler = logging.FileHandler(
-        r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log_4.txt",
+        r"log/log_4.txt",
         encoding='utf-8',
         mode='a'
     )
@@ -381,8 +381,7 @@ class Cam4Config:
         # Scale theo vùng
         if self.is_in_lane1_zone(center, self.zones[0]) == True:
             block_parameter = self.adjust_speed_by_position(center[1], frame_height, 33.5, 2)
-            self.logger.info(f"BP: {block_parameter}")
-                
+            self.logger.info(f"BP: {block_parameter}")    
             # scale theo chiều cao bbox
             real_height = 2.5
             mpp = 0.63
@@ -412,7 +411,7 @@ class Cam4Config:
             block_parameter = self.adjust_speed_by_position(center[1], frame_height, 77.4, 2)
             self.logger.info(f"BP: {block_parameter}")
 
-            # scale theo chiều cao bbox, giả định chiều cao thực tế là 1.5m
+            # scale theo chiều cao bbox
             real_height = 1.8
             mpp = 1.88
             scale_factor = real_height / (bbox_height * mpp + 1e-6)  # tránh chia 0
@@ -714,7 +713,7 @@ class Cam4Config:
                     -> thời gian đèn vàng gợi ý: {self.yellow_time} giây
                     -> thời gian đèn đỏ bên kia gợi ý: {self.red_time_opposite} giây''')
 
-                log_file_light = r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\light_time.txt"
+                log_file_light = r"log/light_time.txt"
                 self.log_green_light_time(self.previous_cycle_direction, self.green_time, self.yellow_time, self.red_time_opposite, log_file_light)
 
             self.previous_cycle_direction = self.current_cycle_direction

@@ -20,7 +20,7 @@ def write_logger():
 
     # Tạo file handler
     file_handler = logging.FileHandler(
-        r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log_5.txt",
+        r"log/log_5.txt",
         encoding='utf-8',
         mode='a'
     )
@@ -229,8 +229,6 @@ class Cam5Config:
 
         # đơn giản hóa: kiểm tra theo hình chữ nhật nằm ngang
         if bl[0] <= x <= tr[0] and tl[1] <= y <= br[1]:
-            # with open(r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log.txt", 'a', encoding='utf-8') as f:
-            #     f.write("\n3. Top Center Left")
             self.logger.info("1. Right_Lane1")
             return True
         return False
@@ -271,8 +269,6 @@ class Cam5Config:
 
         # đơn giản hóa: kiểm tra theo hình chữ nhật nằm ngang
         if tl[0] <= x <= br[0] and tr[1] <= y <= br[1]:
-            # with open(r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\log.txt", 'a', encoding='utf-8') as f:
-            #     f.write("\n3. Top Center Left")
             self.logger.info("5. Lane5")
             return True
         return False
@@ -713,7 +709,7 @@ class Cam5Config:
                     -> thời gian đèn vàng gợi ý: {self.yellow_time} giây
                     -> thời gian đèn đỏ bên kia gợi ý: {self.red_time_opposite} giây''')
 
-                log_file_light = r"C:\Users\ADMIN\OneDrive\Documents\Btap_Code\VisualStudioCode\Python\SecurityCamera\light_time.txt"
+                log_file_light = r"log/light_time.txt"
                 self.log_green_light_time(self.previous_cycle_direction, self.green_time, self.yellow_time, self.red_time_opposite, log_file_light)
 
             self.previous_cycle_direction = self.current_cycle_direction
