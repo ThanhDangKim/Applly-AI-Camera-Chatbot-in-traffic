@@ -248,4 +248,4 @@ def export_data_for_chatbot(output_file="./Data_Traffic/TXT/chatbot_data.txt"):
     except Exception as e:
         print("Lỗi khi xuất dữ liệu:", str(e))
 
-export_data_for_chatbot()
+# export_data_for_chatbot()
