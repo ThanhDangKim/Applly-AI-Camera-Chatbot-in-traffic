@@ -171,6 +171,7 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 ![Chatbot Architecture](Architecture_Images/Chatbot_Architecture.png)
 
 ---
+
 ## ✅ Key Features
 
 1. Ingest and process live video streams from traffic cameras  
@@ -185,5 +186,13 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 10. Support for edge-based or cloud-integrated multi-camera networks  
 11. Chatbot support for natural language traffic queries  
 12. LLM + RAG-based response generation from real-time and planning data sources
+
+---
+## ✍️ Author
+**Đặng Kim Thành**
+**Bùi Quốc Khang**  
+4th-Year Student, HCMC University of Technology and Education  
+Specialization: Artificial Intelligence
+
 
 
