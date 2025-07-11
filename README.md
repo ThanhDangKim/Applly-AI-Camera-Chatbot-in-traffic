@@ -59,7 +59,7 @@ The chatbot enables users to ask traffic or planning-related questions in natura
 
 ### 🔔 Note – `SQL_Agent/` Module
 
-Inside the `chatbot/` folder, there's a subfolder named **`SQL_Agent/`**, which is a **custom-built module using LangGraph** that enhances the chatbot’s ability to **query the PostgreSQL database** efficiently and intelligently.
+Inside the `Chatbot_Traffic/` folder, there's a subfolder named **`SQL_Agent/`**, which is a **custom-built module using LangGraph** that enhances the chatbot’s ability to **query the PostgreSQL database** efficiently and intelligently.
 
 | **Component** | **Description** |
 |---------------|------------------|
@@ -74,6 +74,102 @@ Inside the `chatbot/` folder, there's a subfolder named **`SQL_Agent/`**, which 
 
 ---
 
+## 🗃️ Dataset & PostgreSQL Schema
+The system relies on a well-structured PostgreSQL database to store real-time and historical traffic data, support analytics, and enable natural language queries via the chatbot.
+
+### 🔹 Database Tables
+- `users`: stores account information and roles.
+- `cameras`: stores camera metadata and location.
+- `vehicle_stats`: captures vehicle counts by time slot, direction, and type.
+- `avg_speeds`: stores average speed of traffic by camera and time.
+- `camera_area`: maps cameras to administrative areas.
+- `areas`: defines geographical or administrative areas.
+- `daily_traffic_summary`: aggregates traffic metrics per day.
+- `traffic_events` (optional): logs special traffic events (e.g., congestion, accidents).
+
+### 🔸 Schema Diagram
+┌────────────┐
+│   users    │
+├────────────┤
+│ id (PK)    │
+│ username   │
+│ password   │
+│ full_name  │
+│ role       │
+│ created_at │
+└────┬───────┘
+     │
+     ▼
+┌────────────┐            ┌────────────────────┐
+│  cameras   │───────────▶│   vehicle_stats     │◀────────────┐
+├────────────┤            ├────────────────────┤             │
+│ id (PK)    │            │ id (PK)            │             │
+│ name       │            │ camera_id (FK)     │             │
+│ location   │            │ date (DATE)        │             │
+│ installed  │            │ time_slot (0–47)   │             │
+└────┬───────┘            │ direction          │             │
+     │                    │ vehicle_type       │             │
+     │                    │ vehicle_count      │             │
+     │                    └────────────────────┘             │
+     │                                                       │
+     ▼                                                       │
+┌────────────────────┐                                       │
+│    avg_speeds      │                                       │
+├────────────────────┤                                       │
+│ id (PK)            │                                       │
+│ camera_id (FK)     │                                       │
+│ date (DATE)        │                                       │
+│ time_slot (0–47)   │                                       │
+│ average_speed      │                                       │
+└────────────────────┘                                       │
+     ▲                                                       │
+     │                                                       │
+     │                                                       ▼
+┌────────────────────┐                            ┌────────────────────────────┐
+│   camera_area      │                            │ daily_traffic_summary      │
+├────────────────────┤                            ├────────────────────────────┤
+│ id (PK)            │                            │ id (PK)                    │
+│ camera_id (FK)     │                            │ camera_id (FK)             │
+│ area_id (FK)       │                            │ date (DATE)                │
+│ location_detail    │                            │ total_vehicle_count        │
+└────────┬───────────┘                            │ avg_speed                  │
+         │                                        │ peak_time_slot             │
+         ▼                                        │ direction_with_most_traffic│
+┌────────────────────┐                            └────────────────────────────┘
+│      areas         │
+├────────────────────┤
+│ id (PK)            │
+│ name               │
+│ description        │
+└────────────────────┘
+
+             (Optional)
+                   ▲
+                   │
+                   ▼
+        ┌────────────────────┐
+        │   traffic_events   │
+        ├────────────────────┤
+        │ id (PK)            │
+        │ camera_id (FK)     │
+        │ event_time         │
+        │ event_type         │
+        │ description        │
+        └────────────────────┘
+
+---
+
+## 🧩 System Architecture
+
+### 📷 Camera Monitoring Pipeline
+- Real-time video → Object Detection → Tracking → Traffic Flow Analysis → Signal Control
+![System Architecture](Architecture_Images/System_Architecture.png)
+
+### 🤖 Chatbot + SQL Agent System
+- Natural language → Smart Retriever → Document/Camera Query → SQL Generation → Answer
+![Chatbot Architecture](Architecture_Images/Chatbot_Architecture.png)
+
+---
 ## ✅ Key Features
 
 1. Ingest and process live video streams from traffic cameras  
@@ -87,4 +183,6 @@ Inside the `chatbot/` folder, there's a subfolder named **`SQL_Agent/`**, which 
 9. Provide API access for dashboards and external systems  
 10. Support for edge-based or cloud-integrated multi-camera networks  
 11. Chatbot support for natural language traffic queries  
-12. LLM + RAG-based response generation from real-time and planning data sources  
+12. LLM + RAG-based response generation from real-time and planning data sources
+
+
