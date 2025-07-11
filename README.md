@@ -88,6 +88,7 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 - `traffic_events` (optional): logs special traffic events (e.g., congestion, accidents).
 
 ### 🔸 Schema Diagram
+```text
 ┌────────────┐
 │   users    │
 ├────────────┤
@@ -156,7 +157,7 @@ The system relies on a well-structured PostgreSQL database to store real-time an
         │ event_type         │
         │ description        │
         └────────────────────┘
-
+```
 ---
 
 ## 🧩 System Architecture
