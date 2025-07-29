@@ -235,6 +235,7 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 **Bùi Quốc Khang**  
 4th-Year Student, HCMC University of Technology and Education  
 Specialization: Artificial Intelligence
-
+Contact: dangkimthanh281003@gmail.com  
+LinkedIn: https://www.linkedin.com/in/th%C3%A0nh-dang-kim-b67919309/
 
 
