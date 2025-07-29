@@ -1,4 +1,4 @@
-# 📊 Intelligent Traffic Surveillance System with Integrated Chatbot
+# 📊 Intelligent Traffic Surveillance System with Integrated Traffic ViVi Chatbot
 
 ## 📌 Project Overview
 
@@ -8,7 +8,7 @@ It consists of two main components:
 
 - **Smart Traffic Camera System** – applies deep learning models to detect and track vehicles, analyze traffic flow, and dynamically control traffic lights. The model has been **fine-tuned on real-world data** and optimized for deployment using **ONNX, TensorRT, and OpenVINO**.
 
-- **Traffic Chatbot with LLM + RAG** – allows users to query traffic data and urban planning documents using natural language. The chatbot uses a **fine-tuned LLAMA3.2‑3B model**, powered by a **Smart Retriever** for accurate and context-aware responses.
+- **Traffic Chatbot with Agent + LLM + RAG** – allows users to query traffic data and urban planning documents using natural language. The chatbot uses a **fine-tuned LLAMA3.2‑3B model**, powered by **AI Agent and Smart Retriever** for accurate and context-aware responses.
 
 ---
 
@@ -35,10 +35,11 @@ The camera system processes real-time video input from intersections and applies
 
 ---
 
-## 💬 2. Traffic Chatbot System (LLM + RAG)
+## 💬 2. Traffic Chatbot System (AI Agent + LLM + RAG)
 
 The chatbot enables users to ask traffic or planning-related questions in natural language, and generates responses from:
 
+- A reasoning **AI Agent** that enhances interaction with memory and feedback-driven adaptation
 - **Real-time traffic data** stored in PostgreSQL
 - **Preprocessed urban planning documents** (PDF, JSON)
 
@@ -57,6 +58,42 @@ The chatbot enables users to ask traffic or planning-related questions in natura
 
 ---
 
+### 🤖 AI Agent Integration (LangGraph + ReAct Strategy + Feedback Loop)
+The chatbot is enhanced with an **AI Agent** module that enhances its ability to reason, act, and adapt through:
+
+- **Reasoning flow** via LangGraph to manage the interaction process.
+- **ReAct (Reason + Act) prompting**: The agent iteratively reasons about the user's query and decides when to act using tools.
+- **User feedback awareness** to track repeated failures.
+- **Prompt adaptation**: Automatically rewrites unclear or poorly understood questions.
+- **Memory mechanism**: Remembers past interactions for continuity.
+
+```text
+User Input
+   ↓
+Dual Retriever (Planning + Real-time)
+   ↓
+Context to LLM
+   ↓
+ReAct logic
+   ├─ Reason about intent
+   ↓
+AI Agent (Feedback-Aware)
+   ├─ LLM generates answer
+   ├─ Feedback classified (positive/negative)
+   ├─ If negative:
+   │   ├─ Retry with updated prompt
+   │   └─ Rewrite unclear questions
+```
+
+- ✅ Benefits of the Agent-Augmented System
+     - 📚 Reason before action: ReAct allows the agent to decompose problems before acting
+     - 🔁 Resilience to unclear input – the agent rewrites vague or failed prompts
+     - 🧠 Memory-based learning – learns from bad feedback over time
+     - 🎯 Dynamic strategy – swaps retrieval context, changes prompt format if repeated failure is detected
+     - 🔍 Tool-aware – uses web search and custom retrievers when document context is weak
+
+---
+
 ### 🔔 Note – `SQL_Agent/` Module
 
 Inside the `Chatbot_Traffic/` folder, there's a subfolder named **`SQL_Agent/`**, which is a **custom-built module using LangGraph** that enhances the chatbot’s ability to **query the PostgreSQL database** efficiently and intelligently.
@@ -67,7 +104,6 @@ Inside the `Chatbot_Traffic/` folder, there's a subfolder named **`SQL_Agent/`**
 | **LangGraph workflow** | Implements a **state graph workflow**: generate SQL ➜ execute ➜ detect/fix error ➜ re-run ➜ finalize |
 | **Error memory (`sql_error_memory.json`)** | Stores previously seen SQL errors and corrections for reuse, reducing LLM calls and speeding up responses |
 | **Auto-repair mechanism** | When an error occurs, the agent prompts the LLM with context to generate an improved SQL query (with retry limits) |
-| **RAG integration** | Combines semantic search + BM25 + reranker to select relevant context for complex queries |
 | **Results** | Returns the final SQL, query results, and a detailed history of any error-fixing steps for debugging |
 
 > **Summary:** The `SQL_Agent/` module allows the chatbot to **automatically generate, execute, and fix SQL queries**, ensuring **fast and accurate data retrieval** from the real-time traffic database.
@@ -184,8 +220,11 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 8. Log system states: vehicle count, speed, signal duration  
 9. Provide API access for dashboards and external systems  
 10. Support for edge-based or cloud-integrated multi-camera networks  
-11. Chatbot support for natural language traffic queries  
-12. LLM + RAG-based response generation from real-time and planning data sources
+11. Enable chatbot interactions with support for natural language traffic or planning queries  
+12. Generate responses using **LLM + RAG**: combining real-time data and preprocessed planning documents  
+13. Integrate AI Agent using **ReAct (Reason + Act)** to enable tool-based reasoning, self-correction, and dynamic tool chaining  
+14. Multi-strategy semantic retrieval pipeline: FAISS, BM25, and reranking via embedding models  
+15. Learn and adapt over time through memory tracking and user feedback loop  
 
 ---
 ## ✍️ Author
