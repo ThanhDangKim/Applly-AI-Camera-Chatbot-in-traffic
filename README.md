@@ -210,6 +210,7 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 
 ## ✅ Key Features
 
+### 🎥 Real-time Vision & Traffic Control
 1. Ingest and process live video streams from traffic cameras  
 2. Detect and classify vehicles using deep learning  
 3. Track vehicles across video frames  
@@ -218,7 +219,9 @@ The system relies on a well-structured PostgreSQL database to store real-time an
 6. Estimate signal control metrics (VTw and VTL) per direction  
 7. Make real-time traffic light decisions automatically  
 8. Log system states: vehicle count, speed, signal duration  
-9. Provide API access for dashboards and external systems  
+9. Provide API access for dashboards and external systems
+
+### 💬 Conversational AI & Knowledge Retrieval
 10. Support for edge-based or cloud-integrated multi-camera networks  
 11. Enable chatbot interactions with support for natural language traffic or planning queries  
 12. Generate responses using **LLM + RAG**: combining real-time data and preprocessed planning documents  
